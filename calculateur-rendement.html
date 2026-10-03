@@ -457,6 +457,14 @@
                 interetsCumulesData.push(totalInteretsCumules);
             });
 
+            // Calculer le capital épargné cumulé (sans intérêts)
+            let capitalEpargneData = [];
+            let totalEpargne = 0;
+            donnees.forEach(d => {
+                totalEpargne += d.epargne;
+                capitalEpargneData.push(totalEpargne);
+            });
+
             chart = new Chart(ctx, {
                 type: 'line',
                 data: {
@@ -474,6 +482,17 @@
                             pointBackgroundColor: '#667eea',
                             pointBorderColor: 'white',
                             pointBorderWidth: 2,
+                            yAxisID: 'y',
+                        },
+                        {
+                            label: 'Capital épargné',
+                            data: capitalEpargneData,
+                            borderColor: '#10b981',
+                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                            borderWidth: 2,
+                            fill: false,
+                            tension: 0.3,
+                            pointRadius: 3,
                             yAxisID: 'y',
                         },
                         {
