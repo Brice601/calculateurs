@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculateur de rendement composé</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e9ecef 100%);
+            padding: 2rem 1rem;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 2rem;
+        }
+
+        .section {
+            margin-bottom: 2.5rem;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 1rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .inputs-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-size: 13px;
+            font-weight: 500;
+            color: #555;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        input {
+            padding: 0.75rem;
+            font-size: 14px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            transition: border-color 0.2s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 0.75rem 1.5rem;
+            font-size: 14px;
+            font-weight: 600;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .metric-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1.25rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .metric-label {
+            font-size: 12px;
+            opacity: 0.9;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.5rem;
+        }
+
+        .metric-value {
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 400px;
+            margin-bottom: 2rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        thead {
+            background: #f8f9fa;
+        }
+
+        th {
+            padding: 1rem;
+            text-align: left;
+            font-size: 12px;
+            font-weight: 600;
+            color: #555;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        td {
+            padding: 0.75rem 1rem;
+            font-size: 14px;
+            color: #333;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        tbody tr:hover {
+            background: #fafafa;
+        }
+
+        .text-right {
+            text-align: right;
+        }
+
+        .highlight {
+            background: #fff3cd;
+            padding: 1rem;
+            border-left: 4px solid #ffc107;
+            border-radius: 4px;
+            margin-top: 1rem;
+            font-size: 13px;
+            color: #333;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                padding: 1rem;
+            }
+
+            header {
+                padding: 1.5rem 1rem;
+            }
+
+            h1 {
+                font-size: 22px;
+            }
+
+            .inputs-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+
+            button {
+                width: 100%;
+            }
+
+            .results-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .chart-container {
+                height: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Calculateur de rendement composé</h1>
+            <p class="subtitle">Visualisez la croissance de votre capital avec intérêts et épargne mensuelle</p>
+        </header>
+
+        <div class="content">
+            <!-- Paramètres -->
+            <div class="section">
+                <h2 class="section-title">Paramètres</h2>
+                
+                <div class="inputs-grid">
+                    <div class="input-group">
+                        <label for="capitalInitial">Capital initial (€)</label>
+                        <input type="number" id="capitalInitial" placeholder="0" value="1000" min="0" step="100">
+                    </div>
+
+                    <div class="input-group">
+                        <label for="salaireAnnuel">Salaire annuel (€)</label>
+                        <input type="number" id="salaireAnnuel" placeholder="30000" value="30000" min="0" step="1000">
+                    </div>
+
+                    <div class="input-group">
+                        <label for="tauxEpargne">Taux d'épargne (%)</label>
+                        <input type="number" id="tauxEpargne" placeholder="15" value="15" min="0" max="100" step="1">
+                    </div>
+
+                    <div class="input-group">
+                        <label for="tauxInteret">Rendement annuel (%)</label>
+                        <input type="number" id="tauxInteret" placeholder="5" value="5" min="0" max="50" step="0.5">
+                    </div>
+
+                    <div class="input-group">
+                        <label for="nombreAnnees">Nombre d'années</label>
+                        <input type="number" id="nombreAnnees" placeholder="20" value="20" min="1" max="100" step="1">
+                    </div>
+                </div>
+
+                <div class="button-group">
+                    <button class="btn-primary" onclick="calculer()">Calculer</button>
+                    <button class="btn-secondary" onclick="reinitialiser()">Réinitialiser</button>
+                </div>
+            </div>
+
+            <!-- Résultats -->
+            <div class="section hidden" id="resultatsSection">
+                <h2 class="section-title">Résultats</h2>
+
+                <div class="results-grid" id="metriques">
+                    <div class="metric-card">
+                        <div class="metric-label">Capital final</div>
+                        <div class="metric-value" id="capitalFinal">0 €</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">Total épargné</div>
+                        <div class="metric-value" id="totalEpargne">0 €</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">Intérêts gagnés</div>
+                        <div class="metric-value" id="interetsGagnes">0 €</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">Rendement total</div>
+                        <div class="metric-value" id="rendementTotal">0 %</div>
+                    </div>
+                </div>
+
+                <!-- Graphique -->
+                <div class="chart-container">
+                    <canvas id="chart"></canvas>
+                </div>
+
+                <!-- Tableau détaillé -->
+                <h2 class="section-title" style="margin-top: 2rem;">Détail année par année</h2>
+                <div style="overflow-x: auto;">
+                    <table id="tableau">
+                        <thead>
+                            <tr>
+                                <th>Année</th>
+                                <th class="text-right">Épargne annuelle (€)</th>
+                                <th class="text-right">Intérêts gagnés (€)</th>
+                                <th class="text-right">Capital total (€)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableauBody">
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="highlight">
+                    💡 <strong>À noter :</strong> L'épargne est mensuelle (composée annuellement). Les intérêts sont composés mensuellement. L'épargne mensuelle est calculée sur le salaire annuel divisé par 12, multiplié par le taux d'épargne choisi.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let chart = null;
+
+        function formater(nombre) {
+            return Math.round(nombre).toLocaleString('fr-FR', {
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+            });
+        }
+
+        function calculer() {
+            const capitalInitial = parseFloat(document.getElementById('capitalInitial').value) || 0;
+            const salaireAnnuel = parseFloat(document.getElementById('salaireAnnuel').value) || 0;
+            const tauxEpargne = parseFloat(document.getElementById('tauxEpargne').value) || 0;
+            const tauxInteret = parseFloat(document.getElementById('tauxInteret').value) || 0;
+            const nombreAnnees = parseInt(document.getElementById('nombreAnnees').value) || 0;
+
+            if (nombreAnnees < 1) {
+                alert('Veuillez entrer un nombre d\'années valide');
+                return;
+            }
+
+            // Calculs avec épargne mensuelle et intérêts mensuels
+            const salaireMensuel = salaireAnnuel / 12;
+            const epargnem ensuelle = salaireMensuel * (tauxEpargne / 100);
+            const tauxInteretMensuel = (tauxInteret / 100) / 12;
+            
+            let capital = capitalInitial;
+            let donnees = [];
+            let totalEpargne = capitalInitial;
+            let totalInterets = 0;
+
+            donnees.push({
+                annee: 0,
+                epargne: 0,
+                interets: 0,
+                capital: capital
+            });
+
+            for (let i = 1; i <= nombreAnnees; i++) {
+                let epargneAnnuelle = 0;
+                let interetsAnnuels = 0;
+
+                // 12 mois par année
+                for (let m = 0; m < 12; m++) {
+                    const interets = capital * tauxInteretMensuel;
+                    capital = capital + epargnem ensuelle + interets;
+                    epargneAnnuelle += epargnem ensuelle;
+                    interetsAnnuels += interets;
+                }
+
+                totalEpargne += epargneAnnuelle;
+                totalInterets += interetsAnnuels;
+
+                donnees.push({
+                    annee: i,
+                    epargne: epargneAnnuelle,
+                    interets: interetsAnnuels,
+                    capital: capital
+                });
+            }
+
+            const rendementTotal = totalInterets / totalEpargne * 100;
+
+            // Affichage des métriques
+            document.getElementById('capitalFinal').textContent = formater(capital) + ' €';
+            document.getElementById('totalEpargne').textContent = formater(totalEpargne) + ' €';
+            document.getElementById('interetsGagnes').textContent = formater(totalInterets) + ' €';
+            document.getElementById('rendementTotal').textContent = formater(rendementTotal) + ' %';
+
+            // Remplir le tableau
+            remplirTableau(donnees);
+
+            // Graphique
+            afficherGraphique(donnees);
+
+            // Afficher la section résultats
+            document.getElementById('resultatsSection').classList.remove('hidden');
+        }
+
+        function remplirTableau(donnees) {
+            const tbody = document.getElementById('tableauBody');
+            tbody.innerHTML = '';
+
+            donnees.forEach(ligne => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${ligne.annee}</td>
+                    <td class="text-right">${formater(ligne.epargne)} €</td>
+                    <td class="text-right">${formater(ligne.interets)} €</td>
+                    <td class="text-right"><strong>${formater(ligne.capital)} €</strong></td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function afficherGraphique(donnees) {
+            const ctx = document.getElementById('chart').getContext('2d');
+
+            if (chart) {
+                chart.destroy();
+            }
+
+            const labels = donnees.map(d => 'Année ' + d.annee);
+            const capitalData = donnees.map(d => d.capital);
+            const epargneData = donnees.map(d => d.epargne);
+            const interetsData = donnees.map(d => d.interets);
+
+            chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Capital total',
+                            data: capitalData,
+                            borderColor: '#667eea',
+                            backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.3,
+                            pointRadius: 4,
+                            pointBackgroundColor: '#667eea',
+                            pointBorderColor: 'white',
+                            pointBorderWidth: 2,
+                        },
+                        {
+                            label: 'Intérêts cumulés',
+                            data: interetsData,
+                            borderColor: '#764ba2',
+                            backgroundColor: 'rgba(118, 75, 162, 0.1)',
+                            borderWidth: 2,
+                            fill: false,
+                            tension: 0.3,
+                            pointRadius: 3,
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false,
+                    },
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top',
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return formater(value) + ' €';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function reinitialiser() {
+            document.getElementById('capitalInitial').value = '1000';
+            document.getElementById('salaireAnnuel').value = '30000';
+            document.getElementById('tauxEpargne').value = '15';
+            document.getElementById('tauxInteret').value = '5';
+            document.getElementById('nombreAnnees').value = '20';
+            document.getElementById('resultatsSection').classList.add('hidden');
+            if (chart) {
+                chart.destroy();
+            }
+        }
+
+        // Calculer au chargement
+        window.onload = function() {
+            calculer();
+        };
+    </script>
+</body>
+</html>
