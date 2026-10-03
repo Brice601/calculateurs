@@ -343,7 +343,7 @@
                 </div>
 
                 <div class="highlight">
-                    💡 <strong>À noter :</strong> L'épargne est mensuelle (composée annuellement). Les intérêts sont composés mensuellement. L'épargne mensuelle est calculée sur le salaire annuel divisé par 12, multiplié par le taux d'épargne choisi.
+                    💡 <strong>À noter :</strong> L'épargne est mensuelle. Les intérêts sont composés mensuellement.
                 </div>
             </div>
         </div>
@@ -371,9 +371,8 @@
                 return;
             }
 
-            // Calculs avec épargne mensuelle et intérêts mensuels
             const salaireMensuel = salaireAnnuel / 12;
-            const epargnem ensuelle = salaireMensuel * (tauxEpargne / 100);
+            const montantEpargne = salaireMensuel * (tauxEpargne / 100);
             const tauxInteretMensuel = (tauxInteret / 100) / 12;
             
             let capital = capitalInitial;
@@ -392,11 +391,10 @@
                 let epargneAnnuelle = 0;
                 let interetsAnnuels = 0;
 
-                // 12 mois par année
                 for (let m = 0; m < 12; m++) {
                     const interets = capital * tauxInteretMensuel;
-                    capital = capital + epargnem ensuelle + interets;
-                    epargneAnnuelle += epargnem ensuelle;
+                    capital = capital + montantEpargne + interets;
+                    epargneAnnuelle += montantEpargne;
                     interetsAnnuels += interets;
                 }
 
@@ -413,19 +411,14 @@
 
             const rendementTotal = totalInterets / totalEpargne * 100;
 
-            // Affichage des métriques
             document.getElementById('capitalFinal').textContent = formater(capital) + ' €';
             document.getElementById('totalEpargne').textContent = formater(totalEpargne) + ' €';
             document.getElementById('interetsGagnes').textContent = formater(totalInterets) + ' €';
             document.getElementById('rendementTotal').textContent = formater(rendementTotal) + ' %';
 
-            // Remplir le tableau
             remplirTableau(donnees);
-
-            // Graphique
             afficherGraphique(donnees);
 
-            // Afficher la section résultats
             document.getElementById('resultatsSection').classList.remove('hidden');
         }
 
@@ -454,7 +447,6 @@
 
             const labels = donnees.map(d => 'Année ' + d.annee);
             const capitalData = donnees.map(d => d.capital);
-            const epargneData = donnees.map(d => d.epargne);
             const interetsData = donnees.map(d => d.interets);
 
             chart = new Chart(ctx, {
@@ -526,7 +518,6 @@
             }
         }
 
-        // Calculer au chargement
         window.onload = function() {
             calculer();
         };
