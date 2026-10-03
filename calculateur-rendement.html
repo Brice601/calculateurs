@@ -447,7 +447,15 @@
 
             const labels = donnees.map(d => 'Année ' + d.annee);
             const capitalData = donnees.map(d => d.capital);
-            const interetsData = donnees.map(d => d.interets);
+            const interetsAnnuelsData = donnees.map(d => d.interets);
+            
+            // Calculer les intérêts cumulés au fil des années
+            let interetsCumulesData = [];
+            let totalInteretsCumules = 0;
+            donnees.forEach(d => {
+                totalInteretsCumules += d.interets;
+                interetsCumulesData.push(totalInteretsCumules);
+            });
 
             chart = new Chart(ctx, {
                 type: 'line',
@@ -466,16 +474,30 @@
                             pointBackgroundColor: '#667eea',
                             pointBorderColor: 'white',
                             pointBorderWidth: 2,
+                            yAxisID: 'y',
                         },
                         {
                             label: 'Intérêts cumulés',
-                            data: interetsData,
+                            data: interetsCumulesData,
                             borderColor: '#764ba2',
                             backgroundColor: 'rgba(118, 75, 162, 0.1)',
                             borderWidth: 2,
                             fill: false,
                             tension: 0.3,
                             pointRadius: 3,
+                            yAxisID: 'y',
+                        },
+                        {
+                            label: 'Intérêts par an',
+                            data: interetsAnnuelsData,
+                            borderColor: '#fbbf24',
+                            backgroundColor: 'rgba(251, 191, 36, 0.1)',
+                            borderWidth: 2,
+                            fill: false,
+                            tension: 0.3,
+                            pointRadius: 3,
+                            borderDash: [5, 5],
+                            yAxisID: 'y',
                         }
                     ]
                 },
